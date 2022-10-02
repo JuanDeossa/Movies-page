@@ -1,0 +1,25 @@
+{
+  "name": "movies-page",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JuanDeossa/Movies-page.git"
+  },
+  "keywords": [
+    "javascript",
+    "html",
+    "css",
+    "API-REST"
+  ],
+  "author": "Loco",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JuanDeossa/Movies-page/issues"
+  },
+  "homepage": "https://github.com/JuanDeossa/Movies-page#readme"
+}
