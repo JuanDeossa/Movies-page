@@ -1,17 +1,22 @@
 const API_KEY="804aa1781acab394d667d99070ae4b0f"
-// https://api.themoviedb.org/3/trending/all/day?api_key=<<api_key>>
-// https://api.themoviedb.org/3/genre/movie/list?api_key=<<api_key>>
+const API = axios.create({
+    baseURL:"https://api.themoviedb.org/3/",
+    headers:{
+        "Content-Type":"application/json;charset=utf8",
+    },
+    params:{
+        "api_key":API_KEY
+    }
+})
 
 const trendingMoviesPreview = document.querySelector("#trendingPreview > article") 
 const categoriesPreview = document.querySelector("#categoriesPreview > article") 
 
 async function getTrendingMovies() {
-    const res = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`)
     try {
-        let data = await res.json()
-        data = data.results
-        // console.log(data);
-        data.forEach((element,index) => {
+        const { data } = await API("trending/all/day");
+        const movies = data.results
+        movies.forEach((element) => {
             const altName = element.title ?? element.name
             trendingMoviesPreview.innerHTML+=`
             <div class="movie-container">
@@ -20,19 +25,18 @@ async function getTrendingMovies() {
             `
         });
     } catch (error) {
-        throw new Error(error)
+        throw new Error(`Sorry
+        ${error}`)
     }
 }
 
 getTrendingMovies() 
 
 async function getCategoriesMovies() {
-    const res = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`)
     try {
-        let data = await res.json()
-        data = data.genres
-        // console.log(data);
-        data.forEach((element,index) => {
+        const {data} = await API(`genre/movie/list`)
+        const categories = data.genres
+        categories.forEach((element) => {
             categoriesPreview.innerHTML+=`
             <div class="category-container">
                 <h3 id="id${element.id}" class="category-title">${element.name}</h3>
