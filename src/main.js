@@ -36,13 +36,16 @@ async function getCategoriesMovies() {
         try {
             const {data} = await API(`genre/movie/list`)
             const categories = data.genres
-            categories.forEach((element) => {
+            categories.forEach((element,index) => {
                 categoriesPreviewList.innerHTML+=`
-                <div class="category-container">
+                <div class="category-container" data-id="${element.id}" data-name="${element.name}">
                     <h3 id="id${element.id}" class="category-title">${element.name}</h3>
                 </div>
                 `
-            });
+            })
+            document.querySelectorAll(".category-container").forEach(element=>{
+                element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
+            })  
         } catch (error) {
             throw new Error(error)
         }

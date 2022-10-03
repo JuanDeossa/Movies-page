@@ -12,7 +12,7 @@ window.addEventListener("hashchange",navigator,false)
 window.addEventListener("DOMContentLoaded",navigator,false)
 
 function home() {
-    console.log("home");
+    // console.log("home");
 
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
@@ -31,7 +31,7 @@ function home() {
     getCategoriesMovies() 
 }
 function category() {
-    console.log("category");
+    // console.log("category");
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -46,7 +46,7 @@ function category() {
     movieDetailSection.classList.add("inactive")
 }
 function movie() {
-    console.log("movie");
+    // console.log("movie");
     headerSection.classList.add("header-container--long")
     // headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -61,7 +61,7 @@ function movie() {
     movieDetailSection.classList.remove("inactive")
 }
 function search() {
-    console.log("search");
+    // console.log("search");
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -76,7 +76,7 @@ function search() {
     movieDetailSection.classList.add("inactive")
 }
 function trends() {
-    console.log("trends");
+    // console.log("trends");
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
