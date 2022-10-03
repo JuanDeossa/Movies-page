@@ -5,7 +5,7 @@ trendingBtn.addEventListener("click",()=>{
     location.hash="trends"
 })
 arrowBtn.addEventListener("click",()=>{
-    location.hash=window.history.back()
+    history.back()
 })
 headerTitle.addEventListener("click",()=>{
     location.hash="home"
@@ -100,6 +100,8 @@ function trends() {
     categoriesPreviewSection.classList.add("inactive")
     genericSection.classList.remove("inactive")
     movieDetailSection.classList.add("inactive")
+
+    getMoviesByTrendList()
 }
 function navigator() {
     if (location.hash.startsWith("#trends")) {

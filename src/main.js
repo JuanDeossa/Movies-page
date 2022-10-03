@@ -29,6 +29,26 @@ async function getTrendingMovies() {
     }
 }
 
+async function getMoviesByTrendList() {
+    if (true) {        
+        try {
+            const  {data}  = await API("trending/all/day")
+            headerCategoryTitle.innerHTML="Trends"
+            const movies = data.results
+            movies.forEach((element) => {
+                const altName = element.title ?? element.name
+                genericSection.innerHTML+=`
+                <div class="movie-container">
+                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
+                </div>
+                `
+            });
+        } catch (error) {
+            throw new Error(`Sorry
+            ${error}`)
+        }
+    }
+}
 async function getMoviesByCategory(id,name) {
     if (true) {        
         try {
