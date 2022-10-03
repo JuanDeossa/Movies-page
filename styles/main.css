@@ -211,7 +211,7 @@ button {
 
 
 /* Categories */
-.category-container {
+.category-container,.category-container_ {
   width: 45%;
 }
 
