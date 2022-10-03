@@ -16,11 +16,13 @@ async function renderMovieList(container,urlMod) {
         container.innerHTML=``
         movies.forEach((element) => {
             const altName = element.title ?? element.name
-            container.innerHTML+=`
-            <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-                <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
-            </div>
-            `
+            if (element.poster_path){
+                container.innerHTML+=`
+                <div class="movie-container" data-id="${element.id}" data-name="${altName}">
+                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
+                </div>
+                `
+            }
         });
 
     } catch (error) {
@@ -43,11 +45,13 @@ async function getMoviesByCategory(id,name) {
         const movies = data.results
         movies.forEach((element) => {
             const altName = element.title ?? element.name
-            genericSection.innerHTML+=`
-            <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-                <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
-            </div>
-            `
+            if (element.poster_path){
+                genericSection.innerHTML+=`
+                <div class="movie-container" data-id="${element.id}" data-name="${altName}">
+                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
+                </div>
+                `
+            }
         });
         document.querySelectorAll(".movie-container").forEach(element=>{
             element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
@@ -138,7 +142,6 @@ async function getMovieByID(id){
         movieDetailDescription.innerHTML=data.overview
         movieDetailScore.innerHTML=data.vote_average.toFixed(1)
         getRelatedCategories(data.genres)
-        // getRelateMoviesByID(id)
         renderMovieList(relatedMoviesContainer,`/movie/${id}/recommendations`)
 
     } catch (error) {
