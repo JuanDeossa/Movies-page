@@ -15,8 +15,6 @@ window.addEventListener("hashchange",navigator,false)
 window.addEventListener("DOMContentLoaded",navigator,false)
 
 function home() {
-    // console.log("home");
-
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.add("inactive")
@@ -30,11 +28,10 @@ function home() {
     genericSection.classList.add("inactive")
     movieDetailSection.classList.add("inactive")
     
-    getTrendingMovies() 
+    renderMovieList(trendingMoviesPreviewList,"trending/all/day") 
     getCategoriesMovies() 
 }
 function category() {
-    // console.log("category");
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -53,7 +50,6 @@ function category() {
     getMoviesByCategory(id,name)
 }
 function movie() {
-    // console.log("movie");
     headerSection.classList.add("header-container--long")
     // headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -66,9 +62,11 @@ function movie() {
     categoriesPreviewSection.classList.add("inactive")
     genericSection.classList.add("inactive")
     movieDetailSection.classList.remove("inactive")
+
+    const id = location.hash.split("=")[1].split("-")[0]
+    getMovieByID(id)
 }
 function search() {
-    // console.log("search");
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -87,7 +85,6 @@ function search() {
     getMoviesBySearch(query)
 }
 function trends() {
-    // console.log("trends");
     headerSection.classList.remove("header-container--long")
     headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
@@ -100,8 +97,9 @@ function trends() {
     categoriesPreviewSection.classList.add("inactive")
     genericSection.classList.remove("inactive")
     movieDetailSection.classList.add("inactive")
+    headerCategoryTitle.innerHTML="Trends"
 
-    getMoviesByTrendList()
+    renderMovieList(genericSection,"trending/all/day")
 }
 function navigator() {
     if (location.hash.startsWith("#trends")) {
