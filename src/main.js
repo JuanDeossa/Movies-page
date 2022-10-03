@@ -58,33 +58,31 @@ async function getMoviesByCategory(id,name) {
     }
 }
 
-async function getMoviesBySearch(query) {
-    if (true) {        
-        try {
-            genericSection.innerHTML=``
-            const  {data}  = await API("search/movie",{
-                params:{
-                    query:query
-                }
-            });
-            const movies = data.results
-            movies.forEach((element) => {
-                if (element.poster_path) {
-                    const altName = element.title ?? element.name
-                    genericSection.innerHTML+=`
-                    <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-                        <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
-                    </div>
-                    `
-                }
-            });
-            document.querySelectorAll(".movie-container").forEach(element=>{
-                element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
-            }) 
-        } catch (error) {
-            throw new Error(`Sorry
-            ${error}`)
-        }
+async function getMoviesBySearch(query) {       
+    try {
+        genericSection.innerHTML=``
+        const  {data}  = await API("search/movie",{
+            params:{
+                query:query
+            }
+        });
+        const movies = data.results
+        movies.forEach((element) => {
+            if (element.poster_path) {
+                const altName = element.title ?? element.name
+                genericSection.innerHTML+=`
+                <div class="movie-container" data-id="${element.id}" data-name="${altName}">
+                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
+                </div>
+                `
+            }
+        });
+        document.querySelectorAll(".movie-container").forEach(element=>{
+            element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
+        }) 
+    } catch (error) {
+        throw new Error(`Sorry
+        ${error}`)
     }
 }
 
@@ -125,19 +123,26 @@ async function getMovieByID(id){
     try {
         const {data} = await API(`movie/${id}`)
         const URL = `https://image.tmdb.org/t/p/w500/${data.poster_path}`
-        headerSection.style.background=`url(${URL})`
+        headerSection.style.background = `
+            linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0.35) 19.27%,
+                rgba(0, 0, 0, 0) 29.17%
+            ),
+            url(${URL})
+        `;
+        headerSection.style.backgroundPosition = 'center';
+        headerSection.style.backgroundRepeat = 'no-repeat';
+        headerSection.style.backgroundSize = 'cover';
         movieDetailTitle.innerHTML=data.title
         movieDetailDescription.innerHTML=data.overview
         movieDetailScore.innerHTML=data.vote_average.toFixed(1)
-        console.log(data.genres);
         getRelatedCategories(data.genres)
+        // getRelateMoviesByID(id)
+        renderMovieList(relatedMoviesContainer,`/movie/${id}/recommendations`)
 
     } catch (error) {
         throw new Error(error)
     }
 }
- 
 
-/*
-
- */
