@@ -9,87 +9,23 @@ const API = axios.create({
     }
 })
 
-async function renderMovieList(container,urlMod) {      
-    try {
-        const { data } = await API(urlMod);
-        const movies = data.results
-        container.innerHTML=``
-        movies.forEach((element) => {
-            const altName = element.title ?? element.name
-            if (element.poster_path){
-                container.innerHTML+=`
-                <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
-                </div>
-                `
-            }
-        });
-
-    } catch (error) {
-        throw new Error(`Sorry
-        ${error}`)
-    }
-    document.querySelectorAll(".movie-container").forEach(element=>{
-        element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
-    }) 
+const loadingTemplates={
+    related:`
+    <div class="movie-container related-movie-container--loading"></div>
+    <div class="movie-container related-movie-container--loading"></div>
+    <div class="movie-container related-movie-container--loading"></div>
+    `,
+    trendingPreview:`
+    <div class="movie-container movie-preview-container--loading"></div>
+    <div class="movie-container movie-preview-container--loading"></div>
+    `,
+    movie:`
+    <div class="movie-container movie-container--loading"></div>
+    <div class="movie-container movie-container--loading"></div>
+    <div class="movie-container movie-container--loading"></div>
+    <div class="movie-container movie-container--loading"></div>
+    `
 }
-
-async function getMoviesByCategory(id,name) {      
-    try {
-        const  {data}  = await API("discover/movie",{
-            params:{
-                with_genres:id
-            }
-        });
-        headerCategoryTitle.innerHTML=name
-        const movies = data.results
-        movies.forEach((element) => {
-            const altName = element.title ?? element.name
-            if (element.poster_path){
-                genericSection.innerHTML+=`
-                <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
-                </div>
-                `
-            }
-        });
-        document.querySelectorAll(".movie-container").forEach(element=>{
-            element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
-        }) 
-    } catch (error) {
-        throw new Error(`Sorry
-        ${error}`)
-    }
-}
-
-async function getMoviesBySearch(query) {       
-    try {
-        genericSection.innerHTML=``
-        const  {data}  = await API("search/movie",{
-            params:{
-                query:query
-            }
-        });
-        const movies = data.results
-        movies.forEach((element) => {
-            if (element.poster_path) {
-                const altName = element.title ?? element.name
-                genericSection.innerHTML+=`
-                <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-                    <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
-                </div>
-                `
-            }
-        });
-        document.querySelectorAll(".movie-container").forEach(element=>{
-            element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
-        }) 
-    } catch (error) {
-        throw new Error(`Sorry
-        ${error}`)
-    }
-}
-
 async function getCategoriesMovies() {
     try {
         const {data} = await API(`genre/movie/list`)
@@ -97,32 +33,102 @@ async function getCategoriesMovies() {
         categoriesPreviewList.innerHTML=``
         categories.forEach((element,index) => {
             categoriesPreviewList.innerHTML+=`
-            <div class="category-container_" data-id="${element.id}" data-name="${element.name}">
-                <h3 id="id${element.id}" class="category-title">${element.name}</h3>
+            <div class="category-container" data-id="${element.id}" data-name="${element.name}">
+            <h3 id="id${element.id}" class="category-title">${element.name}</h3>
             </div>
             `
         })
-        document.querySelectorAll(".category-container_").forEach(element=>{
+        document.querySelectorAll(".category-container").forEach(element=>{
             element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
         })  
     } catch (error) {
         throw new Error(error)
     }
 }
-async function getRelatedCategories(categories) {
-    categoryList.innerHTML=``
-    categories.forEach((element,index) => {
-        categoryList.innerHTML+=`
-        <div class="category-container_" data-id="${element.id}" data-name="${element.name}">
-            <h3 id="id${element.id}" class="category-title">${element.name}</h3>
-        </div>
-        `
+async function renderMoviesGrid(container,movies) {
+    movies.forEach((element) => {
+        const altName = element.title ?? element.name
+        if (element.poster_path){
+            container.innerHTML+=`
+            <div class="movie-container" data-id="${element.id}" data-name="${altName}">
+            <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
+            </div>
+            `
+        }
     })
-    document.querySelectorAll(".category-container_").forEach(element=>{
-        element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
-    })  
+    document.querySelectorAll(".movie-container").forEach(element=>{
+        element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
+    }) 
 }
-
+async function renderRelatedMovies(urlMod){
+    relatedMoviesContainer.innerHTML=loadingTemplates.movie
+    try {
+        const { data } = await API(urlMod);
+        const movies = await data.results
+        relatedMoviesContainer.innerHTML=``
+        renderMoviesGrid(relatedMoviesContainer,movies)
+    } catch (error) {
+        throw new Error(`Sorry
+        ${error}`)
+    }
+}
+async function renderMoviesBySearch(query) {       
+    genericSection.innerHTML=loadingTemplates.movie
+    try {
+        const  {data}  = await API("search/movie",{
+            params:{
+                query:query
+            }
+        });
+        const movies = data.results
+        genericSection.innerHTML=``
+        renderMoviesGrid(genericSection,movies) 
+    } catch (error) {
+        throw new Error(`Sorry
+        ${error}`)
+    }
+}
+async function renderPreviewTrends(urlMod) {      
+    trendingMoviesPreviewList.innerHTML=loadingTemplates.trendingPreview
+    try {
+        const { data } = await API(urlMod);
+        const movies = await data.results
+        trendingMoviesPreviewList.innerHTML=``
+        renderMoviesGrid(trendingMoviesPreviewList,movies)
+    } catch (error) {
+        throw new Error(`Sorry
+        ${error}`)
+    }
+}
+async function renderTrends(urlMod) {      
+    genericSection.innerHTML=loadingTemplates.movie
+    try {
+        const { data } = await API(urlMod);
+        const movies = await data.results
+        genericSection.innerHTML=``
+        renderMoviesGrid(genericSection,movies)
+    } catch (error) {
+        throw new Error(`Sorry
+        ${error}`)
+    }
+}
+async function renderMoviesByCategory(id,name) {      
+    headerCategoryTitle.innerHTML=name
+    genericSection.innerHTML=loadingTemplates.movie
+    try {
+        const  {data}  = await API("discover/movie",{
+            params:{
+                with_genres:id
+            }
+        });
+        const movies = data.results
+        genericSection.innerHTML=``
+        renderMoviesGrid(genericSection,movies)
+    } catch (error) {
+        throw new Error(`Sorry
+        ${error}`)
+    }
+}
 async function getMovieByID(id){
     try {
         const {data} = await API(`movie/${id}`)
@@ -142,10 +148,24 @@ async function getMovieByID(id){
         movieDetailDescription.innerHTML=data.overview
         movieDetailScore.innerHTML=data.vote_average.toFixed(1)
         getRelatedCategories(data.genres)
-        renderMovieList(relatedMoviesContainer,`/movie/${id}/recommendations`)
+        renderRelatedMovies(`/movie/${id}/recommendations`)
 
     } catch (error) {
         throw new Error(error)
     }
 }
+async function getRelatedCategories(categories) {
+    categoryList.innerHTML=``
+    categories.forEach((element,index) => {
+        categoryList.innerHTML+=`
+        <div class="category-container" data-id="${element.id}" data-name="${element.name}">
+            <h3 id="id${element.id}" class="category-title">${element.name}</h3>
+        </div>
+        `
+    })
+    document.querySelectorAll(".category-container").forEach(element=>{
+        element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
+    })  
+}
+
 

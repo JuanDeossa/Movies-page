@@ -123,9 +123,6 @@ button {
 }
 
 .header-container--long {
-  background-image: url('https://pics.filmaffinity.com/Deadpool-777527803-large.jpg');
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 19.27%, rgba(0, 0, 0, 0) 29.17%), url(https://pics.filmaffinity.com/Deadpool-777527803-large.jpg);
-  background-size: cover !important;
   height: 480px;
   position: fixed;
   top: 0;
@@ -211,7 +208,7 @@ button {
 
 
 /* Categories */
-.category-container,.category-container_ {
+.category-container{
   width: 45%;
 }
 
@@ -357,3 +354,79 @@ footer {
   display: none;
 }
 
+/*Animations*/
+@keyframes loading-skeleton{
+    0%, 100%{
+        opacity: 100%;
+    }50%{
+        opacity: 0%;
+    }
+}
+
+.movie-preview-container--loading{
+    background-color:var(--purple-medium-1);
+    border-radius: 8px;
+    height: 225px;
+    min-height: 225px;
+    max-height: 225px;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    margin-bottom: 15px;
+    animation: loading-skeleton infinite 1.5s;
+}
+.movie-preview-container--loading:nth-child(2){
+    animation-delay: .2s ;
+}
+
+.movie-container--loading{
+    background-color:var(--purple-medium-1);
+    border-radius: 8px;
+    height: 193px;
+    min-height: 193px;
+    max-height: 193px;
+    width: 129px;
+    min-width: 129px;
+    max-width: 129px;
+    margin-bottom: 15px;
+    animation: loading-skeleton infinite 1.5s;
+}
+.movie-container--loading:nth-child(odd){
+    animation-delay: .2s ;
+}
+
+.category-container--loading{
+    background-color:var(--purple-medium-1);
+    border-radius: 8px;
+    height: 21px;
+    min-height: 21px;
+    max-height: 21px;
+    width: 122px;
+    min-width: 122px;
+    max-width: 122px;
+    margin-bottom: 8px;
+    animation: loading-skeleton infinite 1.5s;
+}
+.category-container--loading:nth-child(even){
+    background-color:var(--purple-medium-1);
+    animation-delay: .2s;
+}
+
+.related-movie-container--loading{
+    background-color:var(--purple-medium-1);
+    border-radius: 8px;
+    height: 187px;
+    min-height: 187px;
+    max-height: 187px;
+    width: 125px;
+    min-width: 125px;
+    max-width: 125px;
+    margin-bottom: 15px;
+    animation: loading-skeleton infinite 1.5s;
+}
+.related-movie-container--loading:nth-child(2){
+    animation-delay: .2s;
+}
+.related-movie-container--loading:nth-child(3){
+    animation-delay: .4s;
+}

@@ -28,7 +28,7 @@ function home() {
     genericSection.classList.add("inactive")
     movieDetailSection.classList.add("inactive")
     
-    renderMovieList(trendingMoviesPreviewList,"trending/all/day") 
+    renderPreviewTrends("trending/all/day") 
     getCategoriesMovies() 
 }
 function category() {
@@ -47,7 +47,7 @@ function category() {
     const id = location.hash.split("=")[1].split("-")[0]
     const name = location.hash.split("=")[1].split("-")[1].replace("%20"," ")
 
-    getMoviesByCategory(id,name)
+    renderMoviesByCategory(id,name)
 }
 function movie() {
     headerSection.classList.add("header-container--long")
@@ -82,7 +82,7 @@ function search() {
 
     const query = location.hash.split("=")[1]
 
-    getMoviesBySearch(query)
+    renderMoviesBySearch(query)
 }
 function trends() {
     headerSection.classList.remove("header-container--long")
@@ -99,7 +99,7 @@ function trends() {
     movieDetailSection.classList.add("inactive")
     headerCategoryTitle.innerHTML="Trends"
 
-    renderMovieList(genericSection,"trending/all/day")
+    renderTrends("trending/all/day")
 }
 function navigator() {
     if (location.hash.startsWith("#trends")) {
