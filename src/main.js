@@ -46,18 +46,25 @@ async function getCategoriesMovies() {
     }
 }
 async function renderMoviesGrid(container,movies) {
-    movies.forEach((element) => {
-        const altName = element.title ?? element.name
-        if (element.poster_path){
+    movies.forEach((movie) => {
+        const altName = movie.title ?? movie.name
+        if (movie.poster_path){
             container.innerHTML+=`
-            <div class="movie-container" data-id="${element.id}" data-name="${altName}">
-            <img src="https://image.tmdb.org/t/p/w300/${element.poster_path} "class="movie-img"alt="${altName}"/>
+            <div class="movie-container">
+                <img 
+                data-img="https://image.tmdb.org/t/p/w300/${movie.poster_path}"
+                class="movie-img"
+                alt="${altName}"
+                data-id="${movie.id}"
+                data-name="${altName}"
+                />
             </div>
             `
         }
     })
-    document.querySelectorAll(".movie-container").forEach(element=>{
-        element.addEventListener("click",()=>location.hash=`movie=${element.dataset.id}-${element.dataset.name}`)
+    document.querySelectorAll(".movie-container > img").forEach(movie=>{
+        movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
+        lazyLoader.observe(movie);
     }) 
 }
 async function renderRelatedMovies(urlMod){
@@ -167,5 +174,16 @@ async function getRelatedCategories(categories) {
         element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
     })  
 }
+
+
+const lazyLoader = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            const url = entry.target.getAttribute("data-img")
+            entry.target.setAttribute("src",url)
+        }
+    })
+})
+
 
 
