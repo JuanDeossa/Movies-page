@@ -48,19 +48,20 @@ async function getCategoriesMovies() {
 async function renderMoviesGrid(container,movies) {
     movies.forEach((movie) => {
         const altName = movie.title ?? movie.name
-        if (movie.poster_path){
-            container.innerHTML+=`
-            <div class="movie-container">
-                <img 
-                data-img="https://image.tmdb.org/t/p/w300/${movie.poster_path}"
-                class="movie-img"
-                alt="${altName}"
-                data-id="${movie.id}"
-                data-name="${altName}"
-                />
-            </div>
-            `
-        }
+        const url = (!movie.poster_path)
+            ?`https://via.placeholder.com/300x450/5c218a/ffffff?text=${altName}`
+            :`https://image.tmdb.org/t/p/w300/${movie.poster_path}`
+        container.innerHTML+=`
+        <div class="movie-container">
+            <img 
+            data-img=${url}
+            class="movie-img"
+            alt="${altName}"
+            data-id="${movie.id}"
+            data-name="${altName}"
+            />
+        </div>
+        `
     })
     document.querySelectorAll(".movie-container > img").forEach(movie=>{
         movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
@@ -72,6 +73,7 @@ async function renderRelatedMovies(urlMod){
     try {
         const { data } = await API(urlMod);
         const movies = await data.results
+        movies.forEach(i=>console.log(i.poster_path))
         relatedMoviesContainer.innerHTML=``
         renderMoviesGrid(relatedMoviesContainer,movies)
     } catch (error) {
@@ -88,6 +90,7 @@ async function renderMoviesBySearch(query) {
             }
         });
         const movies = data.results
+        movies.forEach(i=>console.log(i.poster_path))
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies) 
     } catch (error) {
@@ -100,6 +103,7 @@ async function renderPreviewTrends(urlMod) {
     try {
         const { data } = await API(urlMod);
         const movies = await data.results
+        movies.forEach(i=>console.log(i.poster_path))
         trendingMoviesPreviewList.innerHTML=``
         renderMoviesGrid(trendingMoviesPreviewList,movies)
     } catch (error) {
@@ -112,6 +116,7 @@ async function renderTrends(urlMod) {
     try {
         const { data } = await API(urlMod);
         const movies = await data.results
+        movies.forEach(i=>console.log(i.poster_path))
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies)
     } catch (error) {
@@ -129,6 +134,7 @@ async function renderMoviesByCategory(id,name) {
             }
         });
         const movies = data.results
+        movies.forEach(i=>console.log(i.poster_path))
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies)
     } catch (error) {
@@ -139,7 +145,10 @@ async function renderMoviesByCategory(id,name) {
 async function getMovieByID(id){
     try {
         const {data} = await API(`movie/${id}`)
-        const URL = `https://image.tmdb.org/t/p/w500/${data.poster_path}`
+        const URL = (!data.poster_path)
+            ?`https://via.placeholder.com/2000x2000/5c218a/ffffff?text=${data.original_title.replaceAll(" ","%20")}`
+            :`https://image.tmdb.org/t/p/w500/${data.poster_path}`
+
         headerSection.style.background = `
             linear-gradient(
                 180deg,
@@ -179,7 +188,6 @@ async function getRelatedCategories(categories) {
 const lazyLoader = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
         if (entry.isIntersecting) {
-            console.log(entry.target);
             const url = entry.target.getAttribute("data-img")
             entry.target.setAttribute("src",url)
             lazyLoader.unobserve(entry.target)
