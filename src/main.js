@@ -179,8 +179,10 @@ async function getRelatedCategories(categories) {
 const lazyLoader = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
         if (entry.isIntersecting) {
+            console.log(entry.target);
             const url = entry.target.getAttribute("data-img")
             entry.target.setAttribute("src",url)
+            lazyLoader.unobserve(entry.target)
         }
     })
 })
