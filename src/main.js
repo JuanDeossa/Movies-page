@@ -8,7 +8,6 @@ const API = axios.create({
         "api_key":API_KEY
     }
 })
-
 const loadingTemplates={
     related:`
     <div class="movie-container related-movie-container--loading"></div>
@@ -26,6 +25,15 @@ const loadingTemplates={
     <div class="movie-container movie-container--loading"></div>
     `
 }
+const lazyLoader = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            const url = entry.target.getAttribute("data-img")
+            entry.target.setAttribute("src",url)
+            lazyLoader.unobserve(entry.target)
+        }
+    })
+})
 async function getCategoriesMovies() {
     try {
         const {data} = await API(`genre/movie/list`)
@@ -45,6 +53,19 @@ async function getCategoriesMovies() {
         throw new Error(error)
     }
 }
+async function getRelatedCategories(categories) {
+    categoryList.innerHTML=``
+    categories.forEach((element,index) => {
+        categoryList.innerHTML+=`
+        <div class="category-container" data-id="${element.id}" data-name="${element.name}">
+            <h3 id="id${element.id}" class="category-title">${element.name}</h3>
+        </div>
+        `
+    })
+    document.querySelectorAll(".category-container").forEach(element=>{
+        element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
+    })  
+}
 async function renderMoviesGrid(container,movies) {
     movies.forEach((movie) => {
         const altName = movie.title ?? movie.name
@@ -63,6 +84,14 @@ async function renderMoviesGrid(container,movies) {
         </div>
         `
     })
+    // container.innerHTML+=`
+    // <button id="moreBtn">Show more results</button>
+    // `
+    // document.querySelector("#moreBtn").addEventListener("click",()=>{
+    //     container.appendChild(document.querySelector("#moreBtn"))
+    //     container.removeChild(document.querySelector("#moreBtn"))
+    //     renderPaginatedTrendingMovies()
+    // })
     document.querySelectorAll(".movie-container > img").forEach(movie=>{
         movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
         lazyLoader.observe(movie);
@@ -73,7 +102,6 @@ async function renderRelatedMovies(urlMod){
     try {
         const { data } = await API(urlMod);
         const movies = await data.results
-        movies.forEach(i=>console.log(i.poster_path))
         relatedMoviesContainer.innerHTML=``
         renderMoviesGrid(relatedMoviesContainer,movies)
     } catch (error) {
@@ -89,8 +117,9 @@ async function renderMoviesBySearch(query) {
                 query:query
             }
         });
+        maxPages=data.total_pages
+        console.log(maxPages);
         const movies = data.results
-        movies.forEach(i=>console.log(i.poster_path))
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies) 
     } catch (error) {
@@ -103,7 +132,6 @@ async function renderPreviewTrends(urlMod) {
     try {
         const { data } = await API(urlMod);
         const movies = await data.results
-        movies.forEach(i=>console.log(i.poster_path))
         trendingMoviesPreviewList.innerHTML=``
         renderMoviesGrid(trendingMoviesPreviewList,movies)
     } catch (error) {
@@ -115,10 +143,11 @@ async function renderTrends(urlMod) {
     genericSection.innerHTML=loadingTemplates.movie
     try {
         const { data } = await API(urlMod);
+        maxPages=data.total_pages
+        console.log(`Max page: ${maxPages}`);
         const movies = await data.results
-        movies.forEach(i=>console.log(i.poster_path))
         genericSection.innerHTML=``
-        renderMoviesGrid(genericSection,movies)
+        await renderMoviesGrid(genericSection,movies)
     } catch (error) {
         throw new Error(`Sorry
         ${error}`)
@@ -133,8 +162,9 @@ async function renderMoviesByCategory(id,name) {
                 with_genres:id
             }
         });
+        maxPages=data.total_pages
+        console.log(maxPages);
         const movies = data.results
-        movies.forEach(i=>console.log(i.poster_path))
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies)
     } catch (error) {
@@ -170,30 +200,71 @@ async function getMovieByID(id){
         throw new Error(error)
     }
 }
-async function getRelatedCategories(categories) {
-    categoryList.innerHTML=``
-    categories.forEach((element,index) => {
-        categoryList.innerHTML+=`
-        <div class="category-container" data-id="${element.id}" data-name="${element.name}">
-            <h3 id="id${element.id}" class="category-title">${element.name}</h3>
-        </div>
-        `
-    })
-    document.querySelectorAll(".category-container").forEach(element=>{
-        element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
-    })  
+async function renderScrolledTrendingMovies() {
+    const scroll={
+        scrollHeight,
+        scrollTop,
+        clientHeight,
+    }=document.documentElement;
+    const scrollIsBottom = ((scrollTop+clientHeight)>=scrollHeight-150)
+    const maxPageFalse = (page<maxPages)
+    if (scrollIsBottom && maxPageFalse) {
+        page++
+        console.log(`Current page: ${page}`);
+        const {data} = await API(`trending/movie/day`,{
+            params:{
+                page,
+            }
+        })
+        const movies = data.results
+        renderMoviesGrid(genericSection,movies)
+    }
+}
+function renderSearchedMovies(query) {
+    return async function () {
+        const scroll={
+            scrollHeight,
+            scrollTop,
+            clientHeight,
+        }=document.documentElement;
+        const scrollIsBottom = ((scrollTop+clientHeight)>=scrollHeight-150)
+        const maxPageFalse = (page<maxPages)
+        if (scrollIsBottom && maxPageFalse) {
+            page++
+            const {data} = await API(`search/movie`,{
+                params:{
+                    query,
+                    page,
+                }
+            })
+            const movies = data.results
+            renderMoviesGrid(genericSection,movies)
+        }
+    }
+}
+function renderCategoryzedMovies(id) {
+    return async function () {
+        const scroll={
+            scrollHeight,
+            scrollTop,
+            clientHeight,
+        }=document.documentElement;
+        const scrollIsBottom = ((scrollTop+clientHeight)>=scrollHeight-150)
+        const maxPageFalse = (page<maxPages)
+        if (scrollIsBottom && maxPageFalse) {
+            page++
+            const {data} = await API(`discover/movie`,{
+                params:{
+                    with_genres:id,
+                    page,
+                }
+            })
+            const movies = data.results
+            renderMoviesGrid(genericSection,movies)
+        }
+    }
 }
 
-
-const lazyLoader = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-            const url = entry.target.getAttribute("data-img")
-            entry.target.setAttribute("src",url)
-            lazyLoader.unobserve(entry.target)
-        }
-    })
-})
 
 
 

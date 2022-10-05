@@ -1,3 +1,6 @@
+let page = 1
+let maxPages
+let infiniteScroll
 searchFormBtn.addEventListener("click",()=>{
     location.hash=`search=${searchFormInput.value.trim()}`
 })
@@ -13,6 +16,7 @@ headerTitle.addEventListener("click",()=>{
 
 window.addEventListener("hashchange",navigator,false)
 window.addEventListener("DOMContentLoaded",navigator,false)
+window.addEventListener("scroll",infiniteScroll,{passive:false,})
 
 function home() {
     headerSection.classList.remove("header-container--long")
@@ -48,6 +52,7 @@ function category() {
     const name = location.hash.split("=")[1].split("-")[1].replace("%20"," ")
 
     renderMoviesByCategory(id,name)
+    infiniteScroll = renderCategoryzedMovies(id)
 }
 function movie() {
     headerSection.classList.add("header-container--long")
@@ -83,6 +88,7 @@ function search() {
     const query = location.hash.split("=")[1]
 
     renderMoviesBySearch(query)
+    infiniteScroll = renderSearchedMovies(query)
 }
 function trends() {
     headerSection.classList.remove("header-container--long")
@@ -100,19 +106,35 @@ function trends() {
     headerCategoryTitle.innerHTML="Trends"
 
     renderTrends("trending/all/day")
+    infiniteScroll = renderScrolledTrendingMovies
 }
 function navigator() {
+
+    if (infiniteScroll) {
+        window.removeEventListener("scroll",infiniteScroll,{passive:false,})
+        infiniteScroll = undefined
+    }
+    
     if (location.hash.startsWith("#trends")) {
+        // page = 1
         trends()
     }else if (location.hash.startsWith("#search=")) {
+        // page = 1
         search()
     }else if (location.hash.startsWith("#movie=")) {
+        // page = 1
         movie()
     }else if (location.hash.startsWith("#category=")) {
+        // page = 1
         category()
     }else{
+        // page = 1
         home()
     }
     window.scrollTo(0,0)
+    
+    if (infiniteScroll) {
+        window.addEventListener("scroll",infiniteScroll,{passive:false,})
+    }
 }
 
