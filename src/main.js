@@ -81,21 +81,20 @@ async function renderMoviesGrid(container,movies) {
             data-id="${movie.id}"
             data-name="${altName}"
             />
+            <button id="like-btn"></button>
         </div>
         `
     })
-    // container.innerHTML+=`
-    // <button id="moreBtn">Show more results</button>
-    // `
-    // document.querySelector("#moreBtn").addEventListener("click",()=>{
-    //     container.appendChild(document.querySelector("#moreBtn"))
-    //     container.removeChild(document.querySelector("#moreBtn"))
-    //     renderPaginatedTrendingMovies()
-    // })
     document.querySelectorAll(".movie-container > img").forEach(movie=>{
         movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
         lazyLoader.observe(movie);
-    }) 
+    })
+    document.querySelectorAll("#like-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            btn.classList.toggle("like-btn--clicked")
+        })
+        lazyLoader.observe(btn);
+    })
 }
 async function renderRelatedMovies(urlMod){
     relatedMoviesContainer.innerHTML=loadingTemplates.movie

@@ -101,6 +101,7 @@ button {
 }
 
 .movie-container {
+  position: relative;
   cursor: pointer;
 }
 
@@ -429,4 +430,33 @@ footer {
 }
 .related-movie-container--loading:nth-child(3){
     animation-delay: .4s;
+}
+
+/*Like section*/
+#like-btn{
+  font-size: 35px;
+  border: 3px solid var(--purple-light-2);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 6px;
+  right: 6px;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+}
+#like-btn::before{
+  content: "✰";
+}
+#like-btn:hover{
+  transform: scale(1.1);
+}
+#like-btn.like-btn--clicked{
+  transform: scale(1.1);
+  border-color: rgb(164, 41, 168)
+}
+#like-btn.like-btn--clicked::before{
+  content: "⭐";
+  font-size: 25px;
 }
