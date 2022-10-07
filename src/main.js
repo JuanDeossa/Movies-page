@@ -66,36 +66,6 @@ async function getRelatedCategories(categories) {
         element.addEventListener("click",()=>location.hash=`category=${element.dataset.id}-${element.dataset.name}`)
     })  
 }
-async function renderMoviesGrid(container,movies) {
-    movies.forEach((movie) => {
-        const altName = movie.title ?? movie.name
-        const url = (!movie.poster_path)
-            ?`https://via.placeholder.com/300x450/5c218a/ffffff?text=${altName}`
-            :`https://image.tmdb.org/t/p/w300/${movie.poster_path}`
-        container.innerHTML+=`
-        <div class="movie-container">
-            <img 
-            data-img=${url}
-            class="movie-img"
-            alt="${altName}"
-            data-id="${movie.id}"
-            data-name="${altName}"
-            />
-            <button id="like-btn"></button>
-        </div>
-        `
-    })
-    document.querySelectorAll(".movie-container > img").forEach(movie=>{
-        movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
-        lazyLoader.observe(movie);
-    })
-    document.querySelectorAll("#like-btn").forEach(btn=>{
-        btn.addEventListener("click",()=>{
-            btn.classList.toggle("like-btn--clicked")
-        })
-        lazyLoader.observe(btn);
-    })
-}
 async function renderRelatedMovies(urlMod){
     relatedMoviesContainer.innerHTML=loadingTemplates.movie
     try {
@@ -263,7 +233,60 @@ function renderCategoryzedMovies(id) {
         }
     }
 }
+function renderMoviesGrid(container,movies) {
+    movies.forEach((movie) => {
+        const altName = movie.title ?? movie.name
+        const url = (!movie.poster_path)
+            ?`https://via.placeholder.com/300x450/5c218a/ffffff?text=${altName}`
+            :`https://image.tmdb.org/t/p/w300/${movie.poster_path}`
+        container.innerHTML+=`
+        <div class="movie-container">
+            <img 
+            data-img=${url}
+            class="movie-img"
+            alt="${altName}"
+            data-id="${movie.id}"
+            data-name="${altName}"
+            />
+            <button data-data=${JSON.stringify(movie).replaceAll(" ","%20")} id="like-btn"></button>
+        </div>
+        `
+    })
+    document.querySelectorAll(".movie-container > img").forEach(movie=>{
+        movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
+        lazyLoader.observe(movie);
+    })
+    document.querySelectorAll("#like-btn").forEach(btn=>{
+        const data = JSON.parse(btn.dataset.data.replaceAll("%20"," "))
+        btn.addEventListener("click",()=>{
+            btn.classList.toggle("like-btn--clicked")
+            console.log(updateFavouriteMoviesList(data));
+            console.log(``);
+        })
+        lazyLoader.observe(btn);
+    })
+}
 
 
+function updateFavouriteMoviesList(movie) {
+    const id = movie.id
+    const favs = getObj()
+    if (!favs) {
+        const newObj = {}
+        newObj[id]= movie
+        localStorage.setItem("likedMovies",JSON.stringify(newObj))
+    }else{
+        const newObj = getObj()
+        if (!newObj[id]) {
+            newObj[id]=movie
+        } else {
+            delete newObj[id]
+        }
+        localStorage.setItem("likedMovies",JSON.stringify(newObj))
+    }
+    return Object.values(getObj())
+}
 
-
+function getObj() {
+    return JSON.parse(localStorage.getItem("likedMovies"))
+}
