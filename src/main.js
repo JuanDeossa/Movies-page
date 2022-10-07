@@ -257,16 +257,19 @@ function renderMoviesGrid(container,movies) {
         lazyLoader.observe(movie);
     })
     document.querySelectorAll("#like-btn").forEach(btn=>{
+        const id = JSON.parse(btn.dataset.data).id
+        const array = getObj()
+        if (array[id]) {
+            btn.classList.add("like-btn--clicked")
+        }
         const data = JSON.parse(btn.dataset.data.replaceAll("%20"," "))
         btn.addEventListener("click",()=>{
             btn.classList.toggle("like-btn--clicked")
-            console.log(updateFavouriteMoviesList(data));
-            console.log(``);
+            updateFavouriteMoviesList(data)
         })
         lazyLoader.observe(btn);
     })
 }
-
 
 function updateFavouriteMoviesList(movie) {
     const id = movie.id
@@ -284,9 +287,11 @@ function updateFavouriteMoviesList(movie) {
         }
         localStorage.setItem("likedMovies",JSON.stringify(newObj))
     }
+    console.log(getObj());
     return Object.values(getObj())
 }
 
 function getObj() {
-    return JSON.parse(localStorage.getItem("likedMovies"))
+    const arr = JSON.parse(localStorage.getItem("likedMovies"))??{}
+    return arr
 }
