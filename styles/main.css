@@ -1,5 +1,4 @@
 * { box-sizing: border-box; }
-
 :root {
   --purple-light-1: #FBFAFB;
   --purple-light-2: #EEEAF2;
@@ -25,6 +24,7 @@
 }
 
 html {
+  font-size: 6.25%;
   background-color: var(--purple-medium-3);
 }
 
@@ -88,15 +88,15 @@ button {
 
 
 /* Shared */
-.header-container, .trendingPreview-header, .categoriesPreview-container {
+.header-container, .trendingPreview-header,.favoritePreview-header, .categoriesPreview-container {
   padding: 0 24px;
 }
 
-.trendingPreview-container, .categoriesPreview-container, footer {
+.trendingPreview-container,.favoritePreview-container, .categoriesPreview-container, footer {
   margin-top: 48px;
 }
 
-.trendingPreview-header, .categoriesPreview-title {
+.trendingPreview-header,.favoritePreview-header, .categoriesPreview-title {
   margin-bottom: 24px;
 }
 
@@ -172,19 +172,19 @@ button {
 
 
 /* Trending */
-.trendingPreview-header {
+.trendingPreview-header,.favoritePreview-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.trendingPreview-btn {
+.trendingPreview-btn,.favoritePreview-btn {
   border-radius: 8px;
   height: 32px;
   width: 72px;
 }
 
-.trendingPreview-movieList {
+.trendingPreview-movieList,.favoritePreview-movieList {
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
@@ -193,12 +193,12 @@ button {
   padding-bottom: 16px;
 }
 
-.trendingPreview-movieList .movie-container {
+.trendingPreview-movieList .movie-container,.favoritePreview-movieList .movie-container {
   display: inline-block;
   margin-right: 8px;
 }
 
-.trendingPreview-movieList .movie-container .movie-img {
+.trendingPreview-movieList .movie-container .movie-img,.favoritePreview-movieList .movie-container .movie-img {
   height: 225px;
   min-height: 225px;
   max-height: 225px;
@@ -459,4 +459,33 @@ footer {
 #like-btn.like-btn--clicked::before{
   content: "⭐";
   font-size: 25px;
+}
+
+
+#unlike-btn{
+  font-size: 25px;
+  border: 3px solid var(--purple-light-2);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 6px;
+  left: 6px;
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+}
+#unlike-btn::before{
+  content: "X";
+}
+#unlike-btn:hover{
+  transform: scale(1.1);
+}
+#unlike-btn.unlike-btn--clicked{
+  transform: scale(1.1);
+  border-color: rgb(164, 41, 168)
+}
+#unlike-btn.unlike-btn--clicked::before{
+  content: "X";
+  font-size: 15px;
 }

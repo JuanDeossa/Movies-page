@@ -17,6 +17,14 @@ headerTitle.addEventListener("click",()=>{
 window.addEventListener("hashchange",navigator,false)
 window.addEventListener("DOMContentLoaded",navigator,false)
 window.addEventListener("scroll",infiniteScroll,{passive:false,})
+window.addEventListener('storage', () => {
+    console.log("d");
+    console.log(JSON.parse(window.localStorage.getItem("likedMovies")));
+});
+window.onstorage = () => {
+    console.log("d");
+    console.log(JSON.parse(window.localStorage.getItem("likedMovies")));
+};
 
 function home() {
     headerSection.classList.remove("header-container--long")
@@ -34,6 +42,7 @@ function home() {
     
     renderPreviewTrends("trending/all/day") 
     getCategoriesMovies() 
+    renderFavs()
 }
 function category() {
     headerSection.classList.remove("header-container--long")
@@ -50,6 +59,7 @@ function category() {
     movieDetailSection.classList.add("inactive")
     const id = location.hash.split("=")[1].split("-")[0]
     const name = location.hash.split("=")[1].split("-")[1].replace("%20"," ")
+    favouriteSection.classList.add("inactive")
 
     renderMoviesByCategory(id,name)
     infiniteScroll = renderCategoryzedMovies(id)
@@ -67,6 +77,7 @@ function movie() {
     categoriesPreviewSection.classList.add("inactive")
     genericSection.classList.add("inactive")
     movieDetailSection.classList.remove("inactive")
+    favouriteSection.classList.add("inactive")
 
     const id = location.hash.split("=")[1].split("-")[0]
     getMovieByID(id)
@@ -84,6 +95,7 @@ function search() {
     categoriesPreviewSection.classList.add("inactive")
     genericSection.classList.remove("inactive")
     movieDetailSection.classList.add("inactive")
+    favouriteSection.classList.add("inactive")
 
     const query = location.hash.split("=")[1]
 
@@ -103,6 +115,7 @@ function trends() {
     categoriesPreviewSection.classList.add("inactive")
     genericSection.classList.remove("inactive")
     movieDetailSection.classList.add("inactive")
+    favouriteSection.classList.add("inactive")
     headerCategoryTitle.innerHTML="Trends"
 
     renderTrends("trending/all/day")

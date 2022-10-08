@@ -87,7 +87,7 @@ async function renderMoviesBySearch(query) {
             }
         });
         maxPages=data.total_pages
-        console.log(maxPages);
+        // console.log(maxPages);
         const movies = data.results
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies) 
@@ -113,7 +113,7 @@ async function renderTrends(urlMod) {
     try {
         const { data } = await API(urlMod);
         maxPages=data.total_pages
-        console.log(`Max page: ${maxPages}`);
+        // console.log(`Max page: ${maxPages}`);
         const movies = await data.results
         genericSection.innerHTML=``
         await renderMoviesGrid(genericSection,movies)
@@ -132,7 +132,7 @@ async function renderMoviesByCategory(id,name) {
             }
         });
         maxPages=data.total_pages
-        console.log(maxPages);
+        // console.log(maxPages);
         const movies = data.results
         genericSection.innerHTML=``
         renderMoviesGrid(genericSection,movies)
@@ -179,7 +179,7 @@ async function renderScrolledTrendingMovies() {
     const maxPageFalse = (page<maxPages)
     if (scrollIsBottom && maxPageFalse) {
         page++
-        console.log(`Current page: ${page}`);
+        // console.log(`Current page: ${page}`);
         const {data} = await API(`trending/movie/day`,{
             params:{
                 page,
@@ -261,16 +261,62 @@ function renderMoviesGrid(container,movies) {
         const array = getObj()
         if (array[id]) {
             btn.classList.add("like-btn--clicked")
+        }else{
+            btn.classList.remove("like-btn--clicked")
         }
         const data = JSON.parse(btn.dataset.data.replaceAll("%20"," "))
         btn.addEventListener("click",()=>{
             btn.classList.toggle("like-btn--clicked")
             updateFavouriteMoviesList(data)
+            renderFavs()
         })
         lazyLoader.observe(btn);
     })
 }
-
+function renderFavouriteMoviesGrid(container,movies) {
+    container.innerHTML=``
+    movies.forEach((movie) => {
+        const altName = movie.title ?? movie.name
+        const url = (!movie.poster_path)
+            ?`https://via.placeholder.com/300x450/5c218a/ffffff?text=${altName}`
+            :`https://image.tmdb.org/t/p/w300/${movie.poster_path}`
+        container.innerHTML+=`
+        <div class="movie-container">
+            <img 
+            data-img=${url}
+            class="movie-img"
+            alt="${altName}"
+            data-id="${movie.id}"
+            data-name="${altName}"
+            />
+            <button data-data=${JSON.stringify(movie).replaceAll(" ","%20")} id="unlike-btn"></button>
+        </div>
+        `
+    })
+    document.querySelectorAll(".movie-container > img").forEach(movie=>{
+        movie.addEventListener("click",()=>location.hash=`movie=${movie.dataset.id}-${movie.dataset.name}`)
+        lazyLoader.observe(movie);
+    })
+    document.querySelectorAll("#unlike-btn").forEach(btn=>{
+        const id = JSON.parse(btn.dataset.data).id
+        btn.addEventListener("click",()=>{
+            const newObj = getObj()
+            if (!newObj[id]) {
+                newObj[id]=movie
+            } else {
+                delete newObj[id]
+            }
+            localStorage.setItem("likedMovies",JSON.stringify(newObj))
+            renderFavs()
+            document.querySelectorAll("#like-btn").forEach(btn=>{
+                if (JSON.parse(btn.dataset.data).id===id) {
+                    btn.classList.remove("like-btn--clicked")
+                }
+            })
+        })
+        lazyLoader.observe(btn);
+    })
+}
 function updateFavouriteMoviesList(movie) {
     const id = movie.id
     const favs = getObj()
@@ -287,11 +333,22 @@ function updateFavouriteMoviesList(movie) {
         }
         localStorage.setItem("likedMovies",JSON.stringify(newObj))
     }
-    console.log(getObj());
+    (getObj())
     return Object.values(getObj())
 }
-
 function getObj() {
     const arr = JSON.parse(localStorage.getItem("likedMovies"))??{}
     return arr
 }
+function renderFavs() {
+    const favs = Object.values(getObj())
+    if (favs.length===0) {
+        favouriteSection.classList.add("inactive")
+    }else{
+        if (location.hash.startsWith("#home") || location.hash==="") {
+            renderFavouriteMoviesGrid(favouriteList,Object.values(getObj()))
+            favouriteSection.classList.remove("inactive")
+        }
+    }
+}
+
