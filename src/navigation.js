@@ -1,6 +1,7 @@
 let page = 1
 let maxPages
 let infiniteScroll
+
 searchFormBtn.addEventListener("click",()=>{
     location.hash=`search=${searchFormInput.value.trim()}`
 })
@@ -17,14 +18,6 @@ headerTitle.addEventListener("click",()=>{
 window.addEventListener("hashchange",navigator,false)
 window.addEventListener("DOMContentLoaded",navigator,false)
 window.addEventListener("scroll",infiniteScroll,{passive:false,})
-window.addEventListener('storage', () => {
-    console.log("d");
-    console.log(JSON.parse(window.localStorage.getItem("likedMovies")));
-});
-window.onstorage = () => {
-    console.log("d");
-    console.log(JSON.parse(window.localStorage.getItem("likedMovies")));
-};
 
 function home() {
     headerSection.classList.remove("header-container--long")
@@ -66,7 +59,6 @@ function category() {
 }
 function movie() {
     headerSection.classList.add("header-container--long")
-    // headerSection.style.background=""
     arrowBtn.classList.remove("inactive")
     arrowBtn.classList.add("header-arrow--white")
     headerTitle.classList.add("inactive")
@@ -122,30 +114,22 @@ function trends() {
     infiniteScroll = renderScrolledTrendingMovies
 }
 function navigator() {
-
     if (infiniteScroll) {
         window.removeEventListener("scroll",infiniteScroll,{passive:false,})
         infiniteScroll = undefined
     }
-    
     if (location.hash.startsWith("#trends")) {
-        // page = 1
         trends()
     }else if (location.hash.startsWith("#search=")) {
-        // page = 1
         search()
     }else if (location.hash.startsWith("#movie=")) {
-        // page = 1
         movie()
     }else if (location.hash.startsWith("#category=")) {
-        // page = 1
         category()
     }else{
-        // page = 1
         home()
     }
     window.scrollTo(0,0)
-    
     if (infiniteScroll) {
         window.addEventListener("scroll",infiniteScroll,{passive:false,})
     }
