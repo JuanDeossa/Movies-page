@@ -489,3 +489,18 @@ footer {
   content: "X";
   font-size: 15px;
 }
+
+#searchForm{
+  max-width: 500px;
+}
+@media (min-width:600px) {
+  .trendingPreview-header{
+    justify-content: flex-start;
+    gap: 350px;
+  }
+  body{
+    /* background-color: red; */
+    width: 70vw;
+    margin: 0 auto;
+  }
+}
